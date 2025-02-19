@@ -25,6 +25,24 @@ to restore db:
         CAN BE FIXED BY RUNNING ALTER ROLE COMMAND   
         eg: postgres=# ALTER DATABASE dbx OWNER TO "odoo18-staging";)
 
+to backup filestore:  
+    1. sudo docker exec -it --user root $CONTAINER_NAME bash           
+        eg,                 
+            sudo docker exec -it --user root odoo-docker-setup_odoo_main_1 bash
+    2.(Then inside container bash)
+       tar -cvzf /$FILE_NAME.tar.gz -C /var/lib odoo           
+        eg,                 
+            root@56e7b639e82a:/# tar -cvzf /odoo_backup.tar.gz -C /var/lib odoo
+    3.(Then exit bash and on docker directory copy backedup file to external drive)
+       sudo docker cp $CONTAINER_NAME:$FILENAME.tar.gz $EXTERNAL_DIRECTORY           
+        eg,                 
+            sudo docker cp odoo-docker-setup_odoo_main_1:odoo_backup.tar.gz /home/cybrosys/odoo-docker-setup
+
+
+
+                               
+              
+
 
 
 
