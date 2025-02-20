@@ -24,12 +24,22 @@ docker exec -t $DB_CONTAINER_ID pg_dumpall -c -U odoo18-main > $HOST_PATH/$DB_BA
 # Filestore Backup
 
 
-docker exec -it $CONTAINER_ID tar -cvzf $CONTAINER_PATH/$FILESTORE_BACKUP_NAME -C /var/lib odoo
-# sudo docker exec -it --user root $CONTAINER_ID tar -cvzf /odoo_backup_test_2.tar.gz -C /var/lib odoo
+docker exec $CONTAINER_ID tar -cvzf $CONTAINER_PATH/$FILESTORE_BACKUP_NAME -C /var/lib odoo
+# sudo docker exec --user root $CONTAINER_ID tar -cvzf /odoo_backup_test_2.tar.gz -C /var/lib odoo
 
 
 docker cp $CONTAINER_ID:$CONTAINER_PATH/$FILESTORE_BACKUP_NAME $HOST_PATH
 # sudo docker cp $CONTAINER_ID:odoo_backup_test_2.tar.gz $HOST_PATH
+
+# docker exec $CONTAINER_ID sh -c "ls -tp /tmp/*.tar.gz | grep -v '/$' | tail -n +8 | xargs rm --"
+docker exec $CONTAINER_ID sh -c "find /tmp -type f -name '*.tar.gz' -mtime +7 -exec rm -- {} \;"
+
+
+
+ls -tp "$HOST_PATH"/*.tar.gz | grep -v '/$' | tail -n +8 | xargs rm --
+ls -tp "$HOST_PATH"/*.sql | grep -v '/$' | tail -n +8 | xargs rm --
+
+
 
 # Optional: Remove old backups, keeping last 3
 
@@ -38,3 +48,6 @@ docker cp $CONTAINER_ID:$CONTAINER_PATH/$FILESTORE_BACKUP_NAME $HOST_PATH
 # find $HOST_PATH -type f -name '*.sql' -mtime +3 -exec rm {} \\\\;
 
 echo "Backup completed successfully!"
+
+ls -tp /home/cybrosys/odoo-docker-setup/backup/backup_*.log | grep -v '/$' | tail -n +8 | xargs rm --
+
