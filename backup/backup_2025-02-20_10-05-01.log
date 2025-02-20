@@ -1001,5 +1001,3 @@ odoo/.local/share/Odoo/filestore/dbx/81/81746302d0c7d13b3e2d1cb60200270449be8243
 odoo/.local/share/Odoo/filestore/dbx/d8/
 odoo/.local/share/Odoo/filestore/dbx/d8/d849863c0f3ff1294e45316409cfe146ec348804
 Backup completed successfully!
-rm: missing operand
-Try 'rm --help' for more information.
