@@ -25,6 +25,14 @@ to restore db:
         CAN BE FIXED BY RUNNING ALTER ROLE COMMAND   
         eg: postgres=# ALTER DATABASE dbx OWNER TO "odoo18-staging";)
 
+to create databse role and to give acces:
+        db1=# CREATE ROLE "odoo18-staging" WITH LOGIN SUPERUSER CREATEDB CREATEROLE PASSWORD 'odoo18-staging';
+        CREATE ROLE
+        db1=# ALTER DATABASE db1 OWNER TO "odoo18-staging";
+        ALTER DATABASE
+
+
+
 to backup filestore:  
     1. sudo docker exec -it --user root $CONTAINER_NAME bash           
         eg,                 
@@ -37,6 +45,25 @@ to backup filestore:
        sudo docker cp $CONTAINER_NAME:$FILENAME.tar.gz $EXTERNAL_DIRECTORY           
         eg,                 
             sudo docker cp odoo-docker-setup_odoo_main_1:odoo_backup.tar.gz /home/cybrosys/odoo-docker-setup
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+COMMAND FOR CREATING CRON, ADD THIS INSIDE #sudo crontab -e
+        * * * * * /home/cybrosys/odoo-docker-setup/backup-odoo.sh >> /home/cybrosys/odoo-docker-setup/backup/backup_$(date '+\%Y-\%m-\%d_\%H-\%M-\%S').log 2>&1
+
+#DB backup
+docker run --rm -v "$VOLUME_NAME:$WHERE_TO_MOUNT_VOLUME_INSIDE_CONTAINER" -v "$EXTERNAL_LOCATION_OF_BACKUP_FOLDER:$WHERE_TO_MOUNT_BACKUP_FILE_INSIDE_CONTAINER" busybox sh -c "tar czf $WHERE_TO_MOUNT_BACKUP_FILE_INSIDE_CONTAINER/$DB_BACKUP_NAME $WHERE_TO_MOUNT_VOLUME_INSIDE_CONTAINER"
+docker run --rm -v "odoo-docker-setup_db-main:/data" -v "/home/cybrosys/odoo-docker-setup/backup:/backup" busybox sh -c "tar czf /backup/odoo_db_backup_2025-02-21_08-49-37.tar.gz /data"
+
+#DB restore
+docker run --rm -v "odoo-docker-setup_db-staging:/data" -v "/home/cybrosys/odoo-docker-setup/backup:/backup" busybox sh -c "tar xzf /backup/odoo_db_backup_2025-02-21_08-49-37.tar.gz -C /"
+
+#Filestore backup
+docker run --rm -v "odoo-docker-setup_data-main:/data" -v "/home/cybrosys/odoo-docker-setup/backup:/backup" busybox sh -c "tar czf /backup/odoo_filestore_backup_2025-02-21_08-49-40.tar.gz /data"
+
+#Filestore restore
+docker run --rm -v "odoo-docker-setup_data-staging:/data" -v "/home/cybrosys/odoo-docker-setup/backup:/backup" busybox sh -c "tar xzf /backup/odoo_filestore_backup_2025-02-21_08-49-40.tar.gz -C /"
+
 
 
 
